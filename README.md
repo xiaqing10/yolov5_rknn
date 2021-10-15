@@ -2,4 +2,5 @@
 
 ### yolov5-v4.0 tag
 ### train inference https://github.com/airockchip/yolov5
+### 如果有任何问题，可以直接提issue。
 
