@@ -167,26 +167,16 @@ class RKNNDetector:
 
             input0_data = np.transpose(input0_data, (1,2, 0))
             input0_data = input0_data.reshape((h,w,3,-1))
-            print("transpose: ", input0_data.shape)
             grid_h, grid_w, _,_ = input0_data.shape
 
-            print("11111", input0_data[0][0])
-
             anchors = [self._anchors[i] for i in self._masks[t]]
-            print(anchors)
 
             box_confidence = input0_data[..., 4]
-            print("box_confidence", box_confidence)
             box_confidence = np.expand_dims(box_confidence, axis=-1)
             box_class_probs = input0_data[..., 5:]
 
             box_xy = input0_data[..., :2]
             box_wh = input0_data[..., 2:4]
-
-            #print("box_confidence: ", box_confidence)
-            #print("box_class_ confidence: ", box_class_probs)
-            #print("box_xy :", box_xy)
-            #print("box_wh :", box_wh)
 
             col = np.tile(np.arange(0, grid_w), grid_h).reshape(-1, grid_w)
             row = np.tile(np.arange(0, grid_h).reshape(-1, 1), grid_w)
@@ -205,7 +195,6 @@ class RKNNDetector:
             scores.append(res[2])
         boxes, classes, scores = np.concatenate(boxes), np.concatenate(classes), np.concatenate(scores)
         nboxes, nclasses, nscores = [], [], []
-        print(classes)
         for c in set(classes):
             inds = np.where(classes == c)
             b = boxes[inds]
@@ -222,7 +211,6 @@ class RKNNDetector:
         scores = np.concatenate(nscores)
         label_list = []
         box_list = []
-        print(boxes, scores, classes)
 
         for (x, y, w, h), score, cl in zip(boxes, scores, classes):
             x *= gain[0]
@@ -238,7 +226,6 @@ class RKNNDetector:
             box_list.append((x1, y1, x2, y2))
             if self.draw_box:
                 plot_one_box((x1, y1, x2, y2), img_src, label=self.names[int(cl)])
-        #return label_list, box_list
         return img_src
 
     def predict_resize(self, img_src, conf_thres=0.4, iou_thres=0.45):
@@ -301,6 +288,5 @@ if __name__ == '__main__':
         im_name = os.path.join(files_dir, name)
         img  = cv2.imread(im_name)
         #_, img = cap.read()
-        print(img.shape)
         im  = detector.predict(img)
         cv2.imwrite(os.path.join("out", name), im) 
